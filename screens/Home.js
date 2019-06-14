@@ -1,6 +1,9 @@
 import React, { Component } from 'react';
 import { View, Text, ScrollView, TouchableOpacity } from 'react-native';
 import {connect} from 'react-redux';
+import {bindActionCreators} from 'redux';
+import {deleteName} from '../store/MyActions';
+
 
 class Home extends Component {
 
@@ -15,6 +18,7 @@ class Home extends Component {
 
     constructor(props){
         super(props)
+        console.log("loaded");
         //this.state = {myNames:[{name:"Dev",last_name:"V",id:'2'}]};
     }
 
@@ -25,11 +29,19 @@ class Home extends Component {
         })
     }
 
+    deleteEntry = (obj,index) =>{
+        obj.index = index;
+        this.props.deleteName(obj);
+        
+    }
+
     render() {
         return <ScrollView>
             {
                 this.props.myNames.map((obj,index) => (
-                <TouchableOpacity style={{ justifyContent: 'center', alignItems: 'center', height: 40, borderWidth: 2, borderColor: 'black', margin: 10 }} key={obj.id}>
+                <TouchableOpacity 
+                onLongPress={() => this.deleteEntry(obj,index)}
+                style={{ justifyContent: 'center', alignItems: 'center', height: 40, borderWidth: 2, borderColor: 'black', margin: 10 }} key={obj.id}>
                     <Text style={{ fontSize: 20 }}>{obj.name}</Text>
                 </TouchableOpacity>)
                 )
@@ -41,7 +53,12 @@ class Home extends Component {
 
 const mapStateToProps = (state) =>{
     const {names} = state;
+    console.log(names);
     return names;
 }
 
-export default connect(mapStateToProps)(Home);
+const mapDispatchToProps = (dispatch) => {
+    return bindActionCreators({deleteName},dispatch);
+}
+
+export default connect(mapStateToProps,mapDispatchToProps)(Home);
